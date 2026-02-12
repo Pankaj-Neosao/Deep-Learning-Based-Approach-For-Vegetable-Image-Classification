@@ -17,6 +17,7 @@ import tensorflow as tf
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 # =======================
 # Vegetable Classifier (TFLite)
 # =======================
@@ -69,14 +70,10 @@ class VegetableClassifier:
     def predict(self, image_bytes):
         processed_image = self.preprocess_image(image_bytes)
 
-        self.interpreter.set_tensor(
-            self.input_details[0]["index"], processed_image
-        )
+        self.interpreter.set_tensor(self.input_details[0]["index"], processed_image)
         self.interpreter.invoke()
 
-        predictions = self.interpreter.get_tensor(
-            self.output_details[0]["index"]
-        )[0]
+        predictions = self.interpreter.get_tensor(self.output_details[0]["index"])[0]
 
         predicted_idx = int(np.argmax(predictions))
         confidence = float(predictions[predicted_idx])
@@ -104,6 +101,7 @@ class VegetableClassifier:
 app = Flask(__name__)
 
 classifier = VegetableClassifier()
+
 
 @app.route("/")
 def index():
