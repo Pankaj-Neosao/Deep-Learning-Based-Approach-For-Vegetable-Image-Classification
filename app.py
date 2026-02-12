@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 class VegetableClassifier:
     def __init__(
         self,
-        model_path="vegetable_classification_model.h5",
+        model_path="https://drive.google.com/file/d/1qwZhdagJq74b2DZMJX6Afp9jAImlFZIk/view?usp=sharing",
         class_indices_path="class_indices.json",
     ):
         # Always load files relative to this script
