@@ -1,316 +1,1196 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vegetable Classifier</title>
+    <title>VEGETABLE CLASSIFIER // TACTICAL CONSOLE</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;500;700&family=Orbitron:wght@400;700;900&family=Chakra+Petch:wght@300;500;700&display=swap" rel="stylesheet" />
     <style>
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-        margin: 2em;
-        background-color: #f4f4f9;
-        color: #333;
-      }
-      
-      .container {
-        max-width: 600px;
-        margin: auto;
-        background: #fff;
-        padding: 2em;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      }
-      
-      h1,
-      h2 {
-        color: #333;
-      }
-      
-      .status {
-        padding: 1em;
-        border-radius: 5px;
-        margin-bottom: 1em;
-        border: 1px solid transparent;
-      }
-      
-      .status.ok {
-        background-color: #d4edda;
-        color: #155724;
-        border-color: #c3e6cb;
-      }
-      
-      .status.error {
-        background-color: #f8d7da;
-        color: #721c24;
-        border-color: #f5c6cb;
-      }
-      
-      form {
-        margin-top: 1.5em;
-      }
-      
-      input[type='file'] {
-        display: block;
-        margin-bottom: 1em;
-      }
-      
-      button {
-        background-color: #007bff;
-        color: white;
-        padding: 10px 15px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 1em;
-      }
-      
-      button:hover {
-        background-color: #0056b3;
-      }
-      
-      .results {
-        margin-top: 2em;
-        padding-top: 1em;
-        border-top: 1px solid #eee;
-      }
-      
-      ul {
-        list-style-type: none;
-        padding: 0;
-      }
-      
-      li {
-        background: #f9f9f9;
-        margin-bottom: 0.5em;
-        padding: 0.5em;
-        border-radius: 4px;
-      }
-      
-      /* Modal Styles */
-      .modal-overlay {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.6);
-        z-index: 1000;
-        animation: fadeIn 0.3s ease;
-      }
-      
-      .modal-overlay.active {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
-      
-      .modal-content {
-        background: white;
-        padding: 2em;
-        border-radius: 12px;
-        max-width: 500px;
-        width: 90%;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-        animation: slideIn 0.3s ease;
-        position: relative;
-      }
-      
-      .modal-header {
-        display: flex;
-        align-items: center;
-        margin-bottom: 1em;
-        color: #ff9800;
-      }
-      
-      .modal-header svg {
-        width: 32px;
-        height: 32px;
-        margin-right: 0.5em;
-      }
-      
-      .modal-header h2 {
-        margin: 0;
-        color: #ff9800;
-        font-size: 1.5em;
-      }
-      
-      .modal-body {
-        margin-bottom: 1.5em;
-        line-height: 1.6;
-        color: #555;
-      }
-      
-      .modal-body strong {
-        color: #333;
-      }
-      
-      .modal-body ul {
-        margin-top: 0.5em;
-        padding-left: 1.5em;
-        list-style-type: disc;
-      }
-      
-      .modal-body ul li {
-        background: none;
-        padding: 0.3em 0;
-        margin: 0;
-      }
-      
-      .modal-button {
-        background: linear-gradient(135deg, #007bff, #0056b3);
-        color: white;
-        padding: 12px 30px;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 1em;
-        width: 100%;
-        font-weight: 600;
-        transition: transform 0.2s, box-shadow 0.2s;
-      }
-      
-      .modal-button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
-      }
-      
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
+        :root {
+            --void-black: #0a0a0a;
+            --deep-black: #050505;
+            --pure-white: #ffffff;
+            --off-white: #e0e0e0;
+            --steel-gray: #1a1a1a;
+            --medium-gray: #2a2a2a;
+            --accent-cyan: #00d4ff;
+            --accent-orange: #ff6b35;
+            --accent-red: #ff2a2a;
+            --grid-line: rgba(255, 255, 255, 0.03);
+            --panel-bg: rgba(15, 15, 15, 0.95);
+            --glass: rgba(255, 255, 255, 0.02);
         }
-      
-        to {
-          opacity: 1;
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-      }
-      
-      @keyframes slideIn {
-        from {
-          transform: translateY(-50px);
-          opacity: 0;
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background-color: var(--deep-black);
+            color: var(--off-white);
+            min-height: 100vh;
+            overflow-x: hidden;
+            cursor: crosshair;
         }
-      
-        to {
-          transform: translateY(0);
-          opacity: 1;
+
+        /* Animated Grid Background */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(var(--grid-line) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+            background-size: 60px 60px;
+            animation: gridPulse 4s ease-in-out infinite;
+            z-index: -2;
+            pointer-events: none;
         }
-      }
+
+        @keyframes gridPulse {
+
+            0%,
+            100% {
+                opacity: 0.3;
+            }
+
+            50% {
+                opacity: 0.6;
+            }
+        }
+
+        /* Scanline Effect */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: repeating-linear-gradient(0deg,
+                    rgba(0, 0, 0, 0.15),
+                    rgba(0, 0, 0, 0.15) 1px,
+                    transparent 1px,
+                    transparent 2px);
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .container {
+            max-width: 1920px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Header - Industrial Design */
+        .header {
+            background: linear-gradient(180deg, var(--steel-gray) 0%, var(--void-black) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1.5rem 3rem;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent);
+            animation: scanLine 3s linear infinite;
+        }
+
+        @keyframes scanLine {
+            0% {
+                transform: translateX(-100%);
+            }
+
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            border: 2px solid var(--pure-white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: url("{{ url_for('static', filename='img/icon.avif') }}") no-repeat center center;
+            background-size: cover;
+        }
+
+        .logo-icon::after {
+            content: "";
+            position: absolute;
+            inset: -4px;
+            border: 1px solid var(--accent-cyan);
+            opacity: 0.5;
+        }
+
+        .logo-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            font-weight: 900;
+            letter-spacing: 3px;
+            color: var(--pure-white);
+            text-transform: uppercase;
+        }
+
+        .logo-sub {
+            font-size: 0.7rem;
+            color: var(--accent-cyan);
+            letter-spacing: 6px;
+            margin-top: 0.2rem;
+        }
+
+        .system-status {
+            display: flex;
+            gap: 3rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .status-led {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-cyan);
+            box-shadow: 0 0 10px var(--accent-cyan);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 0.4;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        /* Main Console Layout */
+        .console-layout {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr;
+            gap: 2rem;
+            height: calc(100vh - 200px);
+        }
+
+        /* Panel Base Styles */
+        .panel {
+            background: var(--panel-bg);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(10px);
+        }
+
+        .panel::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        }
+
+        .panel-header {
+            background: var(--glass);
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .panel-content {
+            padding: 2rem;
+            flex: 1;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        /* Corner Accents */
+        .corner {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .corner-tl {
+            top: -1px;
+            left: -1px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .corner-tr {
+            top: -1px;
+            right: -1px;
+            border-left: none;
+            border-bottom: none;
+        }
+
+        .corner-bl {
+            bottom: -1px;
+            left: -1px;
+            border-right: none;
+            border-top: none;
+        }
+
+        .corner-br {
+            bottom: -1px;
+            right: -1px;
+            border-left: none;
+            border-top: none;
+        }
+
+        /* Left Panel - Analysis Display */
+        .results-panel .panel-header {
+            color: var(--accent-cyan);
+            border-bottom-color: rgba(0, 212, 255, 0.3);
+        }
+
+        .sensor-display {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .radar-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin-bottom: 2rem;
+        }
+
+        .radar-circle {
+            width: 100%;
+            height: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            position: relative;
+            background:
+                repeating-radial-gradient(transparent 0, transparent 29px, rgba(255, 255, 255, 0.03) 30px),
+                radial-gradient(circle at center, rgba(0, 212, 255, 0.05) 0%, transparent 70%);
+        }
+
+        .radar-sweep {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 50%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-cyan), transparent);
+            transform-origin: left center;
+            animation: radarSpin 3s linear infinite;
+            box-shadow: 0 0 10px var(--accent-cyan);
+        }
+
+        @keyframes radarSpin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .radar-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 10px;
+            height: 10px;
+            background: var(--accent-cyan);
+            border-radius: 50%;
+            box-shadow: 0 0 20px var(--accent-cyan);
+        }
+
+        .empty-state-text {
+            text-align: center;
+            opacity: 0.5;
+            letter-spacing: 3px;
+            font-size: 0.9rem;
+        }
+
+        .empty-state-text .main {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: var(--pure-white);
+        }
+
+        /* Analysis Results */
+        .analysis-result {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .analysis-result.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .target-display {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .target-label {
+            font-size: 0.75rem;
+            letter-spacing: 4px;
+            color: var(--accent-cyan);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .target-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: var(--pure-white);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            line-height: 1;
+            margin-bottom: 1.5rem;
+        }
+
+        .confidence-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .confidence-bar-container {
+            flex: 1;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .confidence-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--pure-white));
+            width: 0%;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 20px var(--accent-cyan);
+        }
+
+        .confidence-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--pure-white);
+            min-width: 80px;
+            text-align: right;
+        }
+
+        .secondary-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .section-title {
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .prediction-list {
+            list-style: none;
+        }
+
+        .prediction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            font-size: 1.1rem;
+        }
+
+        .prediction-item:last-child {
+            border-bottom: none;
+        }
+
+        .prediction-name {
+            color: var(--off-white);
+            letter-spacing: 1px;
+        }
+
+        .prediction-score {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-cyan);
+            font-weight: 500;
+        }
+
+        /* Right Panel - Upload */
+        .upload-panel .panel-header {
+            color: var(--accent-orange);
+            border-bottom-color: rgba(255, 107, 53, 0.3);
+        }
+
+        .upload-zone {
+            height: 100%;
+            border: 2px dashed rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.01);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-zone:hover {
+            border-color: var(--accent-orange);
+            background: rgba(255, 107, 53, 0.03);
+        }
+
+        .upload-zone::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 107, 53, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .upload-zone:hover::before {
+            left: 100%;
+        }
+
+        .upload-icon {
+            width: 100px;
+            height: 100px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .upload-icon::after {
+            content: "";
+            position: absolute;
+            inset: -10px;
+            border: 1px solid rgba(255, 107, 53, 0.3);
+            border-radius: 50%;
+            animation: pulseRing 2s infinite;
+        }
+
+        @keyframes pulseRing {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1.2);
+                opacity: 0;
+            }
+        }
+
+        .upload-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            letter-spacing: 3px;
+            color: var(--pure-white);
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-subtext {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.4);
+            letter-spacing: 2px;
+            margin-bottom: 2rem;
+        }
+
+        .cyber-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: var(--pure-white);
+            padding: 1rem 2.5rem;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .cyber-btn::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--accent-orange);
+            transition: left 0.3s;
+            z-index: -1;
+        }
+
+        .cyber-btn:hover {
+            color: var(--deep-black);
+            border-color: var(--accent-orange);
+        }
+
+        .cyber-btn:hover::before {
+            left: 0;
+        }
+
+        .primary-btn {
+            border-color: var(--accent-cyan);
+        }
+
+        .primary-btn::before {
+            background: var(--accent-cyan);
+        }
+
+        .primary-btn:hover {
+            border-color: var(--accent-cyan);
+        }
+
+        #file-input {
+            display: none;
+        }
+
+        /* Preview Area */
+        .preview-area {
+            display: none;
+            width: 100%;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .preview-area.active {
+            display: flex;
+        }
+
+        .img-frame {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            margin-bottom: 2rem;
+            background: rgba(0, 0, 0, 0.5);
+            max-width: 100%;
+        }
+
+        .preview-img {
+            max-width: 100%;
+            max-height: 350px;
+            display: block;
+            filter: contrast(1.1);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        /* Processing Overlay */
+        .processing-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(5, 5, 5, 0.95);
+            z-index: 50;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            backdrop-filter: blur(10px);
+        }
+
+        .processing-overlay.active {
+            display: flex;
+        }
+
+        .processing-spinner {
+            width: 80px;
+            height: 80px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--accent-cyan);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 2rem;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .processing-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            letter-spacing: 4px;
+            color: var(--accent-cyan);
+            margin-bottom: 0.5rem;
+        }
+
+        .processing-subtext {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.4);
+            letter-spacing: 2px;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--panel-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+        }
+
+        .modal-header {
+            background: rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 2px;
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .warning-box {
+            background: rgba(255, 42, 42, 0.05);
+            border: 1px solid rgba(255, 42, 42, 0.3);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .warning-title {
+            color: var(--accent-red);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+        }
+
+        .warning-text {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .guidelines {
+            margin-bottom: 2rem;
+        }
+
+        .guideline-item {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .guideline-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .guideline-num {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-cyan);
+            font-size: 1.2rem;
+            font-weight: 700;
+            min-width: 30px;
+        }
+
+        .guideline-content strong {
+            color: var(--pure-white);
+            display: block;
+            margin-bottom: 0.3rem;
+            letter-spacing: 1px;
+        }
+
+        .guideline-content span {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+        }
+
+        .close-btn {
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.5);
+            transition: color 0.3s;
+        }
+
+        .close-btn:hover {
+            color: var(--accent-red);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .console-layout {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+
+            .panel {
+                min-height: 500px;
+            }
+
+            .target-name {
+                font-size: 2.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .logo-text {
+                font-size: 1.5rem;
+            }
+
+            .system-status {
+                gap: 1.5rem;
+            }
+
+            .target-name {
+                font-size: 2rem;
+            }
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--void-black);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
     </style>
-  </head>
+    <base target="_blank">
+</head>
 
-  <body>
-    <!-- First Visit Modal -->
-    <div class="modal-overlay" id="disclaimer-modal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
-          </svg>
-          <h2>Training Model Notice</h2>
-        </div>
-        <div class="modal-body">
-          <p>
-            <strong>Welcome!</strong> This is a <strong>training/testing model</strong> for vegetable image classification using Convolutional Neural Networks (CNN).
-          </p>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo-area">
+                <div class="logo-icon"></div>
+                <div>
+                    <div class="logo-text">Vegetable Image Classification</div>
+                    <div class="logo-sub">DEEP LEARNING BASED APPROACH NEURAL CLASSIFICATION SYSTEM</div>
+                </div>
+            </div>
+            <div class="system-status">
+                <div class="status-item" id="network-stats" style="font-family: 'Share Tech Mono', monospace; width: 150px;">
+                    ETH0: <span style="color: var(--accent-cyan);">12 KB/s</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-led"></div>
+                    <span>SYSTEM ONLINE</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-led"></div>
+                    <span>NEURAL NET ACTIVE</span>
+                </div>
+            </div>
+        </header>
 
-          <p>
-            <strong>Please note:</strong>
-          </p>
-          <ul>
-            <li>
-              This model works on a <strong>single image vegetable</strong>, not multiple images.
-            </li>
-            <li>
-              It is trained on a <strong>smaller dataset(Vegetable Image Dataset)</strong>.
-            </li>
-            <li>
-              It may <strong>not predict correctly</strong>.
-            </li>
-            <li>
-              This model is made for <strong>training purposes</strong>.
-            </li>
-          </ul>
+        <main class="console-layout">
+            <!-- LEFT PANEL: ANALYSIS RESULTS -->
+            <div class="panel results-panel">
+                <div class="corner corner-tl"></div>
+                <div class="corner corner-tr"></div>
+                <div class="corner corner-bl"></div>
+                <div class="corner corner-br"></div>
 
-          <p style="margin-top: 1em; font-size: 0.95em; color: #666;">Keep this in mind when uploading images for classification.</p>
-        </div>
-        <button class="modal-button" onclick="closeModal()">Got it!</button>
-      </div>
+                <div class="panel-header">
+                    <span> ANALYSIS.DATABASE</span>
+                    <span>SECURE_CONNECTION</span>
+                </div>
+
+                <div class="panel-content">
+                    <div id="default-sensors" class="sensor-display">
+                        <div class="radar-container">
+                            <div class="radar-circle">
+                                <div class="radar-sweep"></div>
+                                <div class="radar-center"></div>
+                            </div>
+                        </div>
+                        <div class="empty-state-text">
+                            <div class="main">AWAITING SPECIMEN</div>
+                            <div>UPLOAD VEGETABLE IMAGE FOR ANALYSIS</div>
+                        </div>
+                    </div>
+
+                    <div id="analysis-result" class="analysis-result">
+                        <div class="target-display">
+                            <div class="target-label">Primary Classification</div>
+                            <div class="target-name" id="pred-name">---</div>
+                            <div class="confidence-section">
+                                <div class="confidence-bar-container">
+                                    <div class="confidence-bar-fill" id="pred-bar"></div>
+                                </div>
+                                <div class="confidence-value" id="pred-percent">0%</div>
+                            </div>
+                        </div>
+
+                        <div class="secondary-section">
+                            <div class="section-title">Alternative Classifications</div>
+                            <ul class="prediction-list" id="prediction-list"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT PANEL: UPLOAD MODULE -->
+            <div class="panel upload-panel">
+                <div class="corner corner-tl"></div>
+                <div class="corner corner-tr"></div>
+                <div class="corner corner-bl"></div>
+                <div class="corner corner-br"></div>
+
+                <div class="panel-header">
+                    <span>CNN MODULE</span>
+                    <span>GET READY TO SCAN</span>
+                </div>
+
+                <div class="panel-content" style="position: relative;">
+                    <form id="upload-form" style="height: 100%;">
+                        <div id="upload-drop" class="upload-zone">
+                            <div class="upload-icon">📤</div>
+                            <div class="upload-text">DROP SPECIMEN</div>
+                            <div class="upload-subtext">OR CLICK TO BROWSE</div>
+                            <label for="file-input" class="cyber-btn">
+                                SELECT FILE
+                            </label>
+                            <input type="file" name="file" id="file-input" accept="image/*" />
+                        </div>
+
+                        <div id="preview-area" class="preview-area">
+                            <div class="img-frame">
+                                <img id="preview-img" class="preview-img" src="" alt="specimen" />
+                            </div>
+                            <div class="btn-group">
+                                <button type="submit" class="cyber-btn primary-btn">INITIATE SCAN</button>
+                                <button type="button" class="cyber-btn" onclick="resetUpload()">RESET</button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <div id="processing" class="processing-overlay">
+                        <div class="processing-spinner"></div>
+                        <div class="processing-text">PROCESSING</div>
+                        <div class="processing-subtext">ANALYZING BIO-METRICS</div>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
 
-    <div class="container">
-      <h1>Vegetable Classifier</h1>
-      <div class="status {{ status }}">
-        <strong>Status:</strong> {{ message }}
-      </div>
+    <!-- MISSION BRIEFING MODAL -->
+    <div id="briefing-modal" class="modal-overlay active">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>// SYSTEM_BRIEFING</span>
+                <span class="close-btn" onclick="closeBriefing()">×</span>
+            </div>
+            <div class="modal-body">
+                <div class="warning-box">
+                    <div class="warning-title">⚠️ OPERATIONAL LIMITATIONS</div>
+                    <div class="warning-text">
+                        Neural network trained on limited dataset. Accuracy depends on image quality and composition.
+                    </div>
+                </div>
 
-      {% if status == 'ok' %}
-        <h2>Upload an Image to Classify</h2>
-        <form id="upload-form">
-          <input type="file" name="file" id="file-input" accept="image/*" required />
-          <button type="submit">Predict</button>
-        </form>
-        <div id="results" class="results"></div>
-      {% endif %}
+                <div class="guidelines">
+                    <div class="guideline-item">
+                        <div class="guideline-num">01</div>
+                        <div class="guideline-content">
+                            <strong>SINGLE TARGET PROTOCOL</strong>
+                            <span>Upload images containing ONE specific vegetable type for optimal recognition.</span>
+                        </div>
+                    </div>
+                    <div class="guideline-item">
+                        <div class="guideline-num">02</div>
+                        <div class="guideline-content">
+                            <strong>ISOLATE TARGETS</strong>
+                            <span>Avoid clustered or grouped vegetables. Individual specimens yield best results.</span>
+                        </div>
+                    </div>
+                    <div class="guideline-item">
+                        <div class="guideline-num">03</div>
+                        <div class="guideline-content">
+                            <strong>OPTIMAL IMAGING</strong>
+                            <span>Ensure clear lighting, minimal background noise, and sharp focus.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="cyber-btn primary-btn" onclick="closeBriefing()" style="width: 100%;">
+                    ACKNOWLEDGE & PROCEED
+                </button>
+            </div>
+        </div>
     </div>
 
     <script>
-      // ===== Modal Functionality =====
-      function closeModal() {
-        const modal = document.getElementById('disclaimer-modal')
-        modal.classList.remove('active')
-        localStorage.setItem('disclaimerSeen', 'true')
-      }
-      
-      // Show modal on first visit
-      window.addEventListener('DOMContentLoaded', () => {
-        const hasSeenDisclaimer = localStorage.getItem('disclaimerSeen')
-        if (!hasSeenDisclaimer) {
-          const modal = document.getElementById('disclaimer-modal')
-          modal.classList.add('active')
-        }
-      })
-      
-      // Close modal when clicking outside
-      document.getElementById('disclaimer-modal')?.addEventListener('click', (e) => {
-        if (e.target.id === 'disclaimer-modal') {
-          closeModal()
-        }
-      })
-      
-      // ===== Form Functionality =====
-      const form = document.getElementById('upload-form')
-      const resultsDiv = document.getElementById('results')
-      
-      if (form) {
-        form.addEventListener('submit', async (e) => {
-          e.preventDefault()
-          resultsDiv.innerHTML = '<p>Processing...</p>'
-      
-          const formData = new FormData(form)
-          try {
-            const response = await fetch('/predict', {
-              method: 'POST',
-              body: formData
-            })
-      
-            if (!response.ok) {
-              const errorData = await response.json()
-              throw new Error(errorData.error || `HTTP error! Status: ${response.status}`)
+        (function () {
+            const dropZone = document.getElementById('upload-drop');
+            const fileInput = document.getElementById('file-input');
+            const previewArea = document.getElementById('preview-area');
+            const previewImg = document.getElementById('preview-img');
+            const uploadForm = document.getElementById('upload-form');
+            const defaultSensors = document.getElementById('default-sensors');
+            const analysisResult = document.getElementById('analysis-result');
+            const processing = document.getElementById('processing');
+            const predName = document.getElementById('pred-name');
+            const predBar = document.getElementById('pred-bar');
+            const predPercent = document.getElementById('pred-percent');
+            const predictionList = document.getElementById('prediction-list');
+
+            function handleFile(file) {
+                if (file && file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        previewImg.src = e.target.result;
+                        dropZone.style.display = 'none';
+                        previewArea.classList.add('active');
+                        analysisResult.classList.remove('active');
+                        defaultSensors.style.display = 'flex';
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    alert('Invalid file type. Please select an image file.');
+                }
             }
-      
-            const data = await response.json()
-            let html = `<h3>Prediction: <strong>${data.predicted_vegetable}</strong> (${(data.confidence * 100).toFixed(2)}%)</h3><h4>Top 3 Results:</h4><ul>`
-            data.top_predictions.forEach((pred) => {
-              html += `<li>${pred.vegetable}: ${(pred.confidence * 100).toFixed(2)}%</li>`
-            })
-            html += '</ul>'
-            resultsDiv.innerHTML = html
-          } catch (error) {
-            resultsDiv.innerHTML = `<p style="color: red;"><strong>Error:</strong> ${error.message}</p>`
-          }
-        })
-      }
+
+            window.resetUpload = function () {
+                fileInput.value = '';
+                previewArea.classList.remove('active');
+                dropZone.style.display = 'flex';
+                analysisResult.classList.remove('active');
+                defaultSensors.style.display = 'flex';
+                predBar.style.width = '0%';
+            };
+
+            window.closeBriefing = function () {
+                const modal = document.getElementById('briefing-modal');
+                if (modal) modal.classList.remove('active');
+            };
+
+            if (dropZone) {
+                dropZone.addEventListener('click', (e) => {
+                    if (e.target.tagName === 'LABEL' || e.target.tagName === 'INPUT') return;
+                    fileInput.click();
+                });
+
+                dropZone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    dropZone.style.borderColor = 'var(--accent-orange)';
+                });
+
+                dropZone.addEventListener('dragleave', () => {
+                    dropZone.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                });
+
+                dropZone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    dropZone.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                    if (e.dataTransfer.files.length) {
+                        fileInput.files = e.dataTransfer.files;
+                        handleFile(e.dataTransfer.files[0]);
+                    }
+                });
+
+                fileInput.addEventListener('change', () => {
+                    if (fileInput.files.length) handleFile(fileInput.files[0]);
+                });
+            }
+
+            function showResults(data) {
+                predName.textContent = data.predicted_vegetable;
+                const confPercent = data.confidence * 100;
+                predPercent.textContent = confPercent.toFixed(1) + '%';
+
+                setTimeout(() => {
+                    predBar.style.width = confPercent + '%';
+                }, 100);
+
+                let listHtml = '';
+                data.top_predictions.forEach(p => {
+                    listHtml += `
+                        <li class="prediction-item">
+                            <span class="prediction-name">${p.vegetable}</span>
+                            <span class="prediction-score">${(p.confidence * 100).toFixed(1)}%</span>
+                        </li>
+                    `;
+                });
+                predictionList.innerHTML = listHtml;
+
+                defaultSensors.style.display = 'none';
+                analysisResult.classList.add('active');
+            }
+
+            if (uploadForm) {
+                uploadForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+
+                    if (!fileInput.files || fileInput.files.length === 0) {
+                        alert('NO TARGET SELECTED. PLEASE CHOOSE A VEGETABLE IMAGE.');
+                        return;
+                    }
+
+                    processing.classList.add('active');
+
+                    try {
+                        const formData = new FormData(uploadForm);
+                        const res = await fetch('/predict', { method: 'POST', body: formData });
+
+                        if (!res.ok) {
+                            const errData = await res.json();
+                            throw new Error(errData.error || 'System Error');
+                        }
+
+                        const data = await res.json();
+                        processing.classList.remove('active');
+                        showResults(data);
+
+                    } catch (err) {
+                        processing.classList.remove('active');
+                        alert('ERROR: ' + err.message);
+                    }
+                });
+            }
+
+
+            // Network Fluctuation Simulation
+            setInterval(() => {
+                const stats = document.getElementById('network-stats');
+                if (stats) {
+                    const rx = Math.floor(Math.random() * 50) + 10; // 10-60
+                    const tx = Math.floor(Math.random() * 30) + 5;  // 5-35
+                    stats.innerHTML = `ETH0: <span style="color: var(--accent-cyan);">${rx}↓ ${tx}↑ KB/s</span>`;
+                }
+            }, 800);
+
+        })();
     </script>
-  </body>
+</body>
+
 </html>
