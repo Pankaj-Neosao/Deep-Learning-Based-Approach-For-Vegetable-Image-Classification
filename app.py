@@ -5,7 +5,7 @@ import logging
 from PIL import Image
 from flask import Flask, request, jsonify, render_template
 import numpy as np
-import tensorflow as tf   # ✅ USE TENSORFLOW
+import tensorflow as tf
 import gdown
 
 # =======================
@@ -36,8 +36,8 @@ if not os.path.exists(MODEL_PATH):
     )
 
     # Prevent corrupted HTML download
-    if os.path.getsize(MODEL_PATH) < 1000000:
-        raise ValueError("Downloaded file is too small. Not a valid TFLite model.")
+    if not os.path.exists(MODEL_PATH) or os.path.getsize(MODEL_PATH) < 1000000:
+        raise ValueError("Downloaded file is invalid or too small.")
 
     logger.info("Model downloaded successfully.")
 
@@ -56,7 +56,7 @@ class VegetableClassifier:
 
         logger.info("Loading TFLite model...")
 
-        # ✅ TensorFlow Lite Interpreter
+        # Load TFLite interpreter
         self.interpreter = tf.lite.Interpreter(model_path=model_path)
         self.interpreter.allocate_tensors()
 
@@ -65,44 +65,60 @@ class VegetableClassifier:
 
         logger.info("TFLite model loaded successfully.")
 
+        # Load class labels
         with open(class_indices_path, "r") as f:
             self.class_indices = json.load(f)
 
+        # Reverse mapping: index -> name
         self.class_names = {v: k for k, v in self.class_indices.items()}
+
         self.img_height = 224
         self.img_width = 224
 
     def preprocess_image(self, image_bytes):
         img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
         img = img.resize((self.img_width, self.img_height))
-        img_array = np.array(img, dtype=np.float32) / 255.0
+
+        img_array = np.array(img, dtype=np.float32)
+
+        # Normalize if model expects float32
+        if self.input_details[0]["dtype"] == np.float32:
+            img_array = img_array / 255.0
+
         img_array = np.expand_dims(img_array, axis=0)
+
         return img_array
 
     def predict(self, image_bytes):
         processed_image = self.preprocess_image(image_bytes)
 
-        self.interpreter.set_tensor(self.input_details[0]["index"], processed_image)
+        input_index = self.input_details[0]["index"]
+        output_index = self.output_details[0]["index"]
+
+        # Ensure correct dtype
+        processed_image = processed_image.astype(self.input_details[0]["dtype"])
+
+        self.interpreter.set_tensor(input_index, processed_image)
         self.interpreter.invoke()
 
-        predictions = self.interpreter.get_tensor(
-            self.output_details[0]["index"]
-        )[0]
+        predictions = self.interpreter.get_tensor(output_index)[0]
 
         predicted_idx = int(np.argmax(predictions))
         confidence = float(predictions[predicted_idx])
 
+        # Top 3 predictions
         top_indices = predictions.argsort()[-3:][::-1]
-        top_predictions = [
-            {
-                "vegetable": self.class_names[int(idx)],
+        top_predictions = []
+
+        for idx in top_indices:
+            vegetable_name = self.class_names.get(int(idx), "Unknown")
+            top_predictions.append({
+                "vegetable": vegetable_name,
                 "confidence": float(predictions[idx]),
-            }
-            for idx in top_indices
-        ]
+            })
 
         return {
-            "predicted_vegetable": self.class_names[int(predicted_idx)],
+            "predicted_vegetable": self.class_names.get(predicted_idx, "Unknown"),
             "confidence": confidence,
             "top_predictions": top_predictions,
         }
@@ -111,18 +127,26 @@ class VegetableClassifier:
 # Flask App
 # =======================
 app = Flask(__name__)
-classifier = VegetableClassifier()
+
+try:
+    classifier = VegetableClassifier()
+except Exception as e:
+    logger.error(f"Error loading model: {e}")
+    classifier = None
 
 @app.route("/")
 def index():
     return render_template(
         "index.html",
-        status="ok",
-        message="TFLite Model loaded successfully 🚀",
+        status="ok" if classifier else "error",
+        message="TFLite Model loaded successfully 🚀" if classifier else "Model failed to load ❌",
     )
 
 @app.route("/predict", methods=["POST"])
 def predict():
+    if classifier is None:
+        return jsonify({"error": "Model not loaded"}), 500
+
     if "file" not in request.files:
         return jsonify({"error": "No file uploaded"}), 400
 
@@ -131,13 +155,17 @@ def predict():
     if file.filename == "":
         return jsonify({"error": "No file selected"}), 400
 
-    image_bytes = file.read()
-    result = classifier.predict(image_bytes)
-    return jsonify(result)
+    try:
+        image_bytes = file.read()
+        result = classifier.predict(image_bytes)
+        return jsonify(result)
+    except Exception as e:
+        logger.error(f"Prediction error: {e}")
+        return jsonify({"error": "Prediction failed"}), 500
 
 # =======================
 # Run Server
 # =======================
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 3000))
-    app.run(host="0.0.0.0", port=port)
+    app.run(host="0.0.0.0", port=port, debug=True)
