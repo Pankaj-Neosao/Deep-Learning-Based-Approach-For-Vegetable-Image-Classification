@@ -1,12 +1,11 @@
 import os
-import gdown
 import json
 import io
 import logging
 from PIL import Image
 from flask import Flask, request, jsonify, render_template
 import numpy as np
-import tflite_runtime.interpreter as tflite   # ✅ CHANGED
+import tensorflow as tf   # ✅ USE FULL TENSORFLOW
 
 # =======================
 # Logging
@@ -15,21 +14,14 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # =======================
-# Google Drive TFLite Download
+# Model Path
 # =======================
-DRIVE_FILE_ID = "1rEKE-68SDdAOu8_GmycTgf3nmKJ_GMeA"
 MODEL_FILENAME = "vegetable_model.tflite"
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(BASE_DIR, MODEL_FILENAME)
 
 if not os.path.exists(MODEL_PATH):
-    logger.info("Downloading TFLite model from Google Drive...")
-    gdown.download(
-        f"https://drive.google.com/uc?id={DRIVE_FILE_ID}",
-        MODEL_PATH,
-        quiet=False
-    )
-    logger.info("Download complete.")
+    raise FileNotFoundError("Model file not found in project directory.")
 
 # =======================
 # Vegetable Classifier
@@ -37,23 +29,19 @@ if not os.path.exists(MODEL_PATH):
 class VegetableClassifier:
     def __init__(self, model_path=MODEL_PATH, class_indices_filename="class_indices.json"):
 
-        if not os.path.exists(model_path):
-            raise FileNotFoundError(f"TFLite model not found at: {model_path}")
-
         class_indices_path = os.path.join(BASE_DIR, class_indices_filename)
         if not os.path.exists(class_indices_path):
             raise FileNotFoundError(f"Class indices file not found at: {class_indices_path}")
 
         logger.info("Loading TFLite model...")
 
-        # ✅ USE TFLITE RUNTIME (LIGHTWEIGHT)
-        self.interpreter = tflite.Interpreter(model_path=model_path)
+        self.interpreter = tf.lite.Interpreter(model_path=model_path)
         self.interpreter.allocate_tensors()
 
         self.input_details = self.interpreter.get_input_details()
         self.output_details = self.interpreter.get_output_details()
 
-        logger.info("TFLite model loaded successfully.")
+        logger.info("Model loaded successfully.")
 
         with open(class_indices_path, "r") as f:
             self.class_indices = json.load(f)
@@ -97,7 +85,6 @@ class VegetableClassifier:
             "top_predictions": top_predictions,
         }
 
-
 # =======================
 # Flask App
 # =======================
@@ -106,11 +93,7 @@ classifier = VegetableClassifier()
 
 @app.route("/")
 def index():
-    return render_template(
-        "index.html",
-        status="ok",
-        message="TFLite Model loaded successfully 🚀",
-    )
+    return render_template("index.html")
 
 @app.route("/predict", methods=["POST"])
 def predict():
@@ -125,7 +108,6 @@ def predict():
     image_bytes = file.read()
     result = classifier.predict(image_bytes)
     return jsonify(result)
-
 
 # =======================
 # Run Server
