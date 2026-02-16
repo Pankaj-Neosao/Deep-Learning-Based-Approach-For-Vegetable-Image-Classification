@@ -5,7 +5,7 @@ import logging
 from PIL import Image
 from flask import Flask, request, jsonify, render_template
 import numpy as np
-import tflite_runtime.interpreter as tflite
+import tensorflow as tf   # ✅ USE TENSORFLOW
 import gdown
 
 # =======================
@@ -22,23 +22,22 @@ MODEL_FILENAME = "vegetable_model.tflite"
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(BASE_DIR, MODEL_FILENAME)
 
-# ✅ Correct Google Drive direct download URL
 DOWNLOAD_URL = f"https://drive.google.com/uc?id={DRIVE_FILE_ID}"
 
 # Download model if not exists
 if not os.path.exists(MODEL_PATH):
     logger.info("Downloading TFLite model from Google Drive...")
-    
+
     gdown.download(
         DOWNLOAD_URL,
         MODEL_PATH,
         quiet=False,
-        fuzzy=True  # ✅ IMPORTANT
+        fuzzy=True
     )
 
-    # Verify file size (prevent HTML file issue)
-    if os.path.getsize(MODEL_PATH) < 1000000:  # less than 1MB = wrong
-        raise ValueError("Downloaded file is too small. Likely not the TFLite model.")
+    # Prevent corrupted HTML download
+    if os.path.getsize(MODEL_PATH) < 1000000:
+        raise ValueError("Downloaded file is too small. Not a valid TFLite model.")
 
     logger.info("Model downloaded successfully.")
 
@@ -57,7 +56,8 @@ class VegetableClassifier:
 
         logger.info("Loading TFLite model...")
 
-        self.interpreter = tflite.Interpreter(model_path=model_path)
+        # ✅ TensorFlow Lite Interpreter
+        self.interpreter = tf.lite.Interpreter(model_path=model_path)
         self.interpreter.allocate_tensors()
 
         self.input_details = self.interpreter.get_input_details()
